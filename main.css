@@ -1,0 +1,64 @@
+body {
+    background-color: #24272e;
+}
+
+.game {
+    margin-top: 50px;
+    text-align: center;
+}
+
+.parent {
+    color: white;
+    text-align: center;
+    display: block;
+    font-size: 70px;
+    justify-content: space-around;
+}
+
+.all {
+    display: inline-flex;
+}
+
+#one,
+#three {
+    margin-right: 10px;
+}
+
+.div_btn {
+    width: 100%;
+    justify-content: center;
+}
+
+#btn {
+    font-size: 20;
+    font-weight: bold;
+    position: absolute;
+    width: 25%;
+    margin-left: 40%;
+    color: black;
+    text-align: center;
+    border: none !important;
+    margin-top: 20px;
+    text-decoration: none;
+    padding: 12px 40px;
+    background-color: lightblue;
+    border-radius: 5px;
+    box-shadow: 7px 6px 28px 1px rgba(0, 0, 0, 0.24);
+    cursor: pointer;
+    outline: none;
+    transition: 0.2s all;
+    display: flex;
+    /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+    user-select: none;
+}
+
+#btn:hover {
+    cursor: pointer;
+}
+
+#btn:active {
+    transform: scale(0.98);
+    /* Scaling button to 0.98 to its original size */
+    box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
+    /* Lowering the shadow */
+}
