@@ -1,16 +1,3 @@
-function btn() {
-    var x = false
-    if (x == false) {
-        $('.parent').append('<div id="two" class="all"></div>')
-        $('.parent').append('<div id="and"></div>')
-        $('.parent').append('<div id="three" class="all"></div>')
-        $('.parent').append('<div id="four" class="all"></div>')
-        $('.all').css('border', '1px solid lightskyblue')
-        var x = true
-    }
-    game()
-}
-
 $(document).ready(function() {
     fetch('../Json/PF.json')
         .then((response) => {
@@ -46,3 +33,17 @@ function game() {
     $("#and").html("and")
 }
 $("#footer").css("color", "white")
+x = false
+$(document).ready(function() {
+    $('#btn').click(function() {
+        if (x === false) {
+            $('.parent').append('<div id="two" class="all"></div>')
+            $('.parent').append('<div id="and"></div>')
+            $('.parent').append('<div id="three" class="all"></div>')
+            $('.parent').append('<div id="four" class="all"></div>')
+            $('.all').css('border', '1px solid lightskyblue')
+            x = true
+        }
+        game()
+    })
+})
