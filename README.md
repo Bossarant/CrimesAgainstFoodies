@@ -9,4 +9,4 @@ A stupid website that guarantees your next favorite food
 * in the admin page print the temp.json file
 * make a nother script that prints from admin page ti PF.json
 
-##### git hub pages [a link] (https://bossarant.github.io/CrimesAgainstFoodies/Home/)
+git hub pages [a link] (https://bossarant.github.io/CrimesAgainstFoodies/Home/)
