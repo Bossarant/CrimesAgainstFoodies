@@ -1,32 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <title>List</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="../Css/Header.css">
-    <link rel="stylesheet" href="../Css/list.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="../Css/Header.css" />
+    <link rel="stylesheet" href="../Css/list.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="../Javascript/header.js"></script>
     <script src="../Javascript/list.js"></script>
-</head>
-
-<body id="head">
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <input type="submit">
-                <p type="button" data-toggle="collapse" data-target="#Preperation">Preperations</p>
-                <ol id="Preperation"></ol>
-            </div>
-            <div class="col">
-                <p>Foods</p>
-                <ol id="Food"></ol>
-            </div>
-        </div>
+    <div class="header">
+      <div class="header-right">
+        <a href="../Home">Home</a>
+        <a href="../About">About</a>
+        <a class="active" href="../List">List</a>
+      </div>
+      <a href="../Home" class="logo">Crimes Against Foodies</a>
     </div>
-</body>
+  </head>
 
+  <body id="head">
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <p data-target="#Preperation">Preperations</p>
+          <ol id="Preperation"></ol>
+        </div>
+        <div class="col">
+          <p>Foods</p>
+          <ol id="Food"></ol>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>
