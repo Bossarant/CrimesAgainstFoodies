@@ -1,52 +1,50 @@
 $(document).ready(function() {
-    fetch('../Json/PF.json')
+    fetch("../Json/PF.json")
         .then((response) => {
-            return response.json()
+            return response.json();
         })
         .then((data) => {
-            Json = data
+            Json = data;
         })
         .catch((err) => {
             // Do something for an error here
-            alert("something went wrong" + err)
-        })
-
-})
+            alert("something went wrong" + err);
+        });
+    $("#btn").click(function() {
+        $("#sound")[0].play()
+    })
+});
 
 function getPreperation() {
     var varPreperation =
-        Json.Preperation[parseInt(Math.random() * Json.Preperation.length)]
-    return varPreperation
+        Json.Preperation[parseInt(Math.random() * Json.Preperation.length)];
+    return varPreperation;
 }
 
 function getfood() {
-    var varfood =
-        Json.Food[parseInt(Math.random() * Json.Food.length)]
-    return varfood
+    var varfood = Json.Food[parseInt(Math.random() * Json.Food.length)];
+    return varfood;
 }
 
 function game() {
-    $("#one").html(getPreperation())
-    $("#two").html(getfood())
-    $("#three").html(getPreperation())
-    $("#four").html(getfood())
-    $("#and").html("and")
+    $("#one").html(getPreperation());
+    $("#two").html(getfood());
+    $("#three").html(getPreperation());
+    $("#four").html(getfood());
+    $("#and").html("and");
 }
-$("#footer").css("color", "white")
-x = false
+$("#footer").css("color", "white");
+x = false;
 $(document).ready(function() {
-    $('#btn').click(function() {
+    $("#btn").click(function() {
         if (x === false) {
-            $('.parent').append('<div id="two" class="all"></div>')
-            $('.parent').append('<div id="and"></div>')
-            $('.parent').append('<div id="three" class="all"></div>')
-            $('.parent').append('<div id="four" class="all"></div>')
-            $('.all').css('border', '1px solid lightskyblue')
-            x = true
+            $(".parent").append('<div id="two" class="all"></div>');
+            $(".parent").append('<div id="and"></div>');
+            $(".parent").append('<div id="three" class="all"></div>');
+            $(".parent").append('<div id="four" class="all"></div>');
+            $(".all").css("border", "1px solid lightskyblue");
+            x = true;
         }
-        game()
-    })
-})
-$("p").click(function(){
-  alert("The paragraph was clicked.");
+        game();
+    });
 });
