@@ -47,3 +47,6 @@ $(document).ready(function() {
         game()
     })
 })
+$("p").click(function(){
+  alert("The paragraph was clicked.");
+});
