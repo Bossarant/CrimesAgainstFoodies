@@ -1,23 +1,61 @@
 let Json; // Declare Json in a broader scope
 let gameInitialized = false; // To track if the game elements have been added
 let localTempSuggestions = []; // To store user suggestions locally
+const pfJsonStorageKey = 'crimesAgainstFoodies_PF_Json';
 
 document.addEventListener('DOMContentLoaded', function() {
-    fetch("Json/PF.json") // Adjusted path assuming Json folder is at the same level as index.html
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+    // Attempt to load PF.json data from localStorage
+    try {
+        const storedPfJson = localStorage.getItem(pfJsonStorageKey);
+        if (storedPfJson) {
+            console.log("Found PF.json in localStorage.");
+            Json = JSON.parse(storedPfJson);
+            if (Json && Json.Food && Json.Preperation) { // Basic validation
+                 populateListSection(); // Populate the list section with JSON data from localStorage
+            } else {
+                // Data from localStorage is invalid/incomplete, fetch from file
+                console.warn("PF.json from localStorage is invalid. Fetching from file.");
+                fetchAndStorePfJson();
             }
-            return response.json();
-        })
-        .then((data) => {
-            Json = data;
-            populateListSection(); // Populate the list section with JSON data
-        })
-        .catch((err) => {
-            console.error("Failed to load JSON data:", err);
-            alert("Something went wrong while loading data: " + err.message);
-        });
+        } else {
+            // Not in localStorage, fetch from file
+            console.log("PF.json not found in localStorage. Fetching from file.");
+            fetchAndStorePfJson();
+        }
+    } catch (e) {
+        console.error("Error reading PF.json from localStorage:", e);
+        // Fallback to fetching from file if localStorage read fails
+        fetchAndStorePfJson();
+    }
+
+    function fetchAndStorePfJson() {
+        fetch("Json/PF.json") // Adjusted path
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                Json = data;
+                populateListSection(); // Populate with fetched data
+                try {
+                    localStorage.setItem(pfJsonStorageKey, JSON.stringify(Json));
+                    console.log("PF.json fetched and stored in localStorage.");
+                } catch (e) {
+                    console.error("Error storing PF.json to localStorage:", e);
+                }
+            })
+            .catch((err) => {
+                console.error("Failed to load PF.json from file:", err);
+                // Attempt to provide a default empty structure if fetch fails, to prevent errors elsewhere
+                if (!Json) { // If Json is still not defined after all attempts
+                    Json = { Food: [], Preperation: [] };
+                    populateListSection(); // Populate with empty data
+                }
+                alert("Something went wrong while loading essential food data: " + err.message + "\nSome functionalities might be limited.");
+            });
+    }
 
     const btn = document.getElementById('btn');
     const sound = document.getElementById('sound');
@@ -122,6 +160,21 @@ document.addEventListener('DOMContentLoaded', function() {
             if (defaultRadio) {
                 defaultRadio.checked = true;
             }
+        });
+    }
+
+    // Alt+Click logo to go to Admin page
+    const logoImageElement = document.getElementById('logo-image'); // Corrected variable name
+    if (logoImageElement) {
+        logoImageElement.addEventListener('click', function(event) {
+            if (event.altKey) {
+                // The logo is inside an anchor tag <a href="index.html">.
+                // We need to prevent that default navigation to index.html first.
+                event.preventDefault();
+                window.location.href = 'Admin/index.html';
+                console.log('Alt+click on logo detected, navigating to admin page.');
+            }
+            // If only click (no Alt), the parent anchor tag will handle navigation to index.html normally.
         });
     }
 });
