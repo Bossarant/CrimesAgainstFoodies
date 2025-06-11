@@ -175,6 +175,31 @@ body {
     background-color: var(--bg-tertiary, var(--bg-tertiary-light));
 }
 
+/* Styles for the new header actions container and nav button */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between items in the actions container */
+}
+
+.header-nav-btn {
+    display: inline-block;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color, var(--border-color-light));
+    color: var(--text-primary, var(--text-primary-light));
+    background-color: var(--bg-secondary, var(--bg-secondary-light)); /* Match header background or use tertiary */
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 15px; /* Slightly smaller than main buttons */
+    line-height: 1; /* Ensure text (like emoji) is centered well */
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.header-nav-btn:hover {
+    background-color: var(--bg-tertiary, var(--bg-tertiary-light)); /* Slight hover effect */
+    border-color: var(--border-strong, var(--border-strong-light));
+}
+
 /* Footer styling for admin page */
 #footer {
     text-align: center;
@@ -243,3 +268,137 @@ body[data-theme="dark"] #admin-logo-image {
 /* In light mode, the original Crimes.png (assumed to be dark/black) will be shown without inversion. */
 /* If you need a drop-shadow for the non-inverted logo in light mode for any reason, add it here: */
 /* body[data-theme="light"] #admin-logo-image { filter: drop-shadow(0 0 1px rgba(0,0,0,0.2)); } */
+
+/* Styles for the "Add New Suggestion" form elements */
+#add-suggestion-form-container {
+    /* The container already exists, we are styling its children */
+    padding-bottom: 15px; /* Add some padding at the bottom of the form area */
+}
+
+#new-suggestion-item-name {
+    background-color: var(--bg-tertiary, var(--bg-tertiary-light));
+    color: var(--text-primary, var(--text-primary-light));
+    padding: 10px;
+    border: 1px solid var(--border-color, var(--border-color-light));
+    border-radius: 4px;
+    font-family: var(--font-family-primary);
+    width: calc(100% - 22px); /* Adjust width to account for padding and border */
+    margin-bottom: 10px; /* Space below input */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#new-suggestion-item-name:focus {
+    outline: none;
+    border-color: var(--accent-color, var(--accent-color-light));
+    /* A subtle box-shadow for focus, using accent color with transparency */
+    box-shadow: 0 0 0 2px var(--accent-color-transparent, rgba(0,123,255,0.25));
+}
+
+/* Define --accent-color-transparent based on theme */
+body[data-theme="light"] {
+    --accent-color-transparent: rgba(0,123,255,0.25);
+}
+body[data-theme="dark"] {
+    --accent-color-transparent: rgba(0,170,255,0.3); /* Slightly different for dark theme if needed */
+}
+
+
+#add-suggestion-form-container .suggestion-type-selection {
+    margin-bottom: 15px; /* Space below radio group */
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Reduced gap for tighter grouping */
+}
+
+#add-suggestion-form-container .suggestion-type-selection label {
+    margin-right: 5px; /* Space between radio and its text label */
+    color: var(--text-secondary, var(--text-secondary-light)); /* Use secondary text color for less emphasis */
+    font-size: 0.95em;
+    display: inline-flex; /* Align items within label */
+    align-items: center;
+}
+
+#add-suggestion-form-container input[type="radio"] {
+    accent-color: var(--accent-color, var(--accent-color-light));
+    margin-right: 3px; /* Fine-tune space */
+    vertical-align: middle; /* Better alignment with text */
+}
+
+#add-new-suggestion-btn {
+    background-color: var(--accent-color, var(--accent-color-light));
+    color: #ffffff; /* Assuming accent color always contrasts well with white */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+    width: 100%; /* Make button full width of its container */
+    box-sizing: border-box;
+}
+
+#add-new-suggestion-btn:hover {
+    opacity: 0.85; /* Common hover effect */
+}
+
+/* Edit form styling - reuse some of the above ideas */
+.edit-form-inputs input[type="text"] {
+    background-color: var(--bg-tertiary, var(--bg-tertiary-light));
+    color: var(--text-primary, var(--text-primary-light));
+    padding: 8px;
+    border: 1px solid var(--border-color, var(--border-color-light));
+    border-radius: 4px;
+    font-family: var(--font-family-primary);
+    width: calc(100% - 18px); /* Adjust width for padding/border */
+    margin-bottom: 8px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.edit-form-inputs input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent-color, var(--accent-color-light));
+    box-shadow: 0 0 0 2px var(--accent-color-transparent, rgba(0,123,255,0.25));
+}
+
+.edit-form-inputs button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    margin-right: 10px;
+}
+
+.edit-form-inputs button.save-edit-btn {
+    background-color: var(--accent-color, var(--accent-color-light));
+    color: white;
+}
+.edit-form-inputs button.cancel-edit-btn {
+    background-color: var(--button-bg-dark, #6c757d); /* A neutral grey or similar */
+    color: white;
+}
+.edit-form-inputs button:hover {
+    opacity: 0.85;
+}
+
+.duplicate-warning {
+    font-size: 0.85em;
+    color: var(--note-border, #ffc107); /* Using existing variable for amber color */
+    margin-top: 8px; /* Add some space above the warning, within the suggestion item */
+    padding: 5px 8px;
+    background-color: var(--note-bg, #e9ecef); /* Light background for the warning */
+    border-left: 3px solid var(--note-border, #ffc107);
+    border-radius: 3px;
+    line-height: 1.4; /* Adjust line height for readability */
+}
+
+.duplicate-warning strong {
+    /* Ensure the item name within the warning is styled consistently */
+    /* By default, inherits color from .duplicate-warning, which is good. */
+    /* If specific color needed: color: var(--text-heading, var(--text-primary-light)); */
+    font-weight: 600; /* Make the matched item name slightly bolder */
+}

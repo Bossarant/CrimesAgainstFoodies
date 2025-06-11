@@ -8,30 +8,131 @@ document.addEventListener('DOMContentLoaded', function() {
     const newSuggestionItemNameInput = document.getElementById('new-suggestion-item-name');
     const addNewSuggestionButton = document.getElementById('add-new-suggestion-btn');
 
-    let pfData = { Food: [], Preperation: [] }; // To store PF.json content
+    const pfJsonStorageKey = 'crimesAgainstFoodies_PF_Json';
+    let currentPfJsonData = { Food: [], Preperation: [] }; // Holds PF.json data
 
-    // Fetch PF.json data on load
-    fetch('../Json/PF.json')
-        .then(response => {
-            if (!response.ok) {
-                // If PF.json is not found, it's a problem for approvals.
-                // For this simulation, we'll log an error and continue with empty pfData,
-                // meaning approvals won't be "saved" to any existing master list.
-                console.error(`HTTP error! status: ${response.status} - ${response.statusText} while fetching PF.json. Approvals will only affect the session if PF.json is missing.`);
-                // In a real app, might want to disable approval functionality or warn user more prominently.
-                return { Food: [], Preperation: [] }; // Return default structure on error
+    // Function to load PF.json from localStorage or fetch and store
+    function initializePfJsonData() {
+        try {
+            const storedPfJson = localStorage.getItem(pfJsonStorageKey);
+            if (storedPfJson) {
+                console.log("Found PF.json in localStorage (Admin).");
+                currentPfJsonData = JSON.parse(storedPfJson);
+                if (!currentPfJsonData || !currentPfJsonData.Food || !currentPfJsonData.Preperation) {
+                    console.warn("PF.json from localStorage is invalid/incomplete (Admin). Re-initializing.");
+                    fetchAndStoreInitialPfJson(); // Fallback if stored data is malformed
+                } else {
+                    console.log("PF.json loaded successfully from localStorage (Admin):", currentPfJsonData);
+                }
+                return; // Exit if loaded from localStorage
             }
-            return response.json();
-        })
-        .then(data => {
-            pfData = data;
-            console.log("PF.json loaded successfully:", pfData);
-        })
-        .catch(error => {
-            console.error('Error loading or parsing PF.json:', error);
-            // pfData remains as its default { Food: [], Preperation: [] }
-            // This means approvals won't be added to any existing master list shown in this session from PF.json
-        });
+        } catch (e) {
+            console.error("Error reading PF.json from localStorage (Admin):", e);
+            // Proceed to fetch if localStorage read fails
+        }
+
+        // If not in localStorage or read failed, fetch from file
+        fetchAndStoreInitialPfJson();
+    }
+
+    function fetchAndStoreInitialPfJson() {
+        console.log("Fetching initial PF.json from file (Admin)...");
+        fetch('../Json/PF.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status} while fetching PF.json (Admin)`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                currentPfJsonData = data;
+                console.log("PF.json fetched successfully (Admin):", currentPfJsonData);
+                try {
+                    localStorage.setItem(pfJsonStorageKey, JSON.stringify(currentPfJsonData));
+                    console.log("PF.json fetched and stored in localStorage (Admin).");
+                } catch (e) {
+                    console.error("Error storing PF.json to localStorage (Admin):", e);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading or parsing initial PF.json from file (Admin):', error);
+                // Initialize with default empty structure and save to localStorage if fetch fails
+                currentPfJsonData = { Food: [], Preperation: [] };
+                try {
+                    localStorage.setItem(pfJsonStorageKey, JSON.stringify(currentPfJsonData));
+                    console.log("Stored default empty PF.json structure to localStorage (Admin) due to fetch error.");
+                } catch (e) {
+                    console.error("Error storing default PF.json to localStorage (Admin):", e);
+                }
+            });
+    }
+
+    initializePfJsonData(); // Load PF.json data on script start
+
+    function normalizeString(str) {
+        if (typeof str !== 'string') return '';
+        return str.toLowerCase().trim();
+    }
+
+    function levenshteinDistance(s1, s2) {
+        // s1 and s2 are already normalized (lowercase, trimmed) by the caller if needed
+        const costs = [];
+        for (let i = 0; i <= s1.length; i++) {
+            let lastValue = i;
+            for (let j = 0; j <= s2.length; j++) {
+                if (i === 0) costs[j] = j;
+                else if (j > 0) {
+                    let newValue = costs[j - 1];
+                    if (s1.charAt(i - 1) !== s2.charAt(j - 1)) {
+                        newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                    }
+                    costs[j - 1] = lastValue;
+                    lastValue = newValue;
+                }
+            }
+            if (i > 0) costs[s2.length] = lastValue;
+        }
+        return costs[s2.length];
+    }
+
+    function checkIfDuplicate(itemName, pfData) {
+        const normalizedItemName = normalizeString(itemName);
+        if (!normalizedItemName) return { isDuplicate: false }; // Avoid checking empty strings
+
+        const listsToCheck = [
+            { name: 'Food', items: pfData.Food || [] },
+            { name: 'Preperation', items: pfData.Preperation || [] }
+        ];
+
+        for (const list of listsToCheck) {
+            for (const existingItem of list.items) {
+                const normalizedExistingItem = normalizeString(existingItem);
+                if (!normalizedExistingItem) continue;
+
+                // 1. Exact match (case-insensitive)
+                if (normalizedItemName === normalizedExistingItem) {
+                    return { isDuplicate: true, matchedItem: existingItem, list: list.name, type: 'exact' };
+                }
+                // 2. Substring check (normalized)
+                if (normalizedExistingItem.includes(normalizedItemName) || normalizedItemName.includes(normalizedExistingItem)) {
+                     // Avoid flagging very short substrings (e.g., "a" in "apple") as too noisy.
+                    if (Math.min(normalizedItemName.length, normalizedExistingItem.length) > 2) {
+                       return { isDuplicate: true, matchedItem: existingItem, list: list.name, type: 'substring' };
+                    }
+                }
+                // 3. Levenshtein distance for misspellings (threshold: 1 for short, 2 for longer)
+                const distance = levenshteinDistance(normalizedItemName, normalizedExistingItem);
+                let threshold = 1;
+                if (Math.max(normalizedItemName.length, normalizedExistingItem.length) > 5) {
+                    threshold = 2;
+                }
+                if (distance <= threshold && distance > 0) { // distance > 0 to avoid re-flagging exact matches
+                    return { isDuplicate: true, matchedItem: existingItem, list: list.name, type: 'similar (Levenshtein)' };
+                }
+            }
+        }
+        return { isDuplicate: false };
+    }
 
     // Simulate login
     if (loginButton) {
@@ -68,6 +169,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const selectedType = selectedTypeElement.value;
+
+            // Check for duplicates before adding
+            const duplicateCheckResult = checkIfDuplicate(itemName, currentPfJsonData);
+            if (duplicateCheckResult.isDuplicate) {
+                const confirmationMessage = `Warning: Your suggestion "${itemName}" might be a duplicate of "${duplicateCheckResult.matchedItem}" (found in ${duplicateCheckResult.list} list as type: ${duplicateCheckResult.type}).\n\nDo you want to add it to the pending list anyway?`;
+                if (!confirm(confirmationMessage)) {
+                    newSuggestionItemNameInput.value = ''; // Clear input
+                     const defaultRadio = document.getElementById('admin-type-both');
+                    if (defaultRadio) defaultRadio.checked = true;
+                    return; // Admin chose not to add
+                }
+            }
 
             const newSuggestion = {
                 id: `new_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`, // Temporary unique ID
@@ -208,6 +321,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const contentP = document.createElement('p');
         contentP.classList.add('suggestion-content-display');
         renderSuggestionContent(contentP, suggestion); // renderSuggestionContent now includes the type
+
+        // Check for duplicates and add warning if needed
+        const duplicateResult = checkIfDuplicate(suggestion.item, currentPfJsonData);
+        if (duplicateResult.isDuplicate) {
+            const warningP = document.createElement('p');
+            warningP.classList.add('duplicate-warning');
+            warningP.innerHTML = `⚠️ Possible duplicate of "<strong>${escapeHTML(duplicateResult.matchedItem)}</strong>" (in ${escapeHTML(duplicateResult.list)} list, type: ${escapeHTML(duplicateResult.type)}).`;
+            contentP.appendChild(warningP); // Append warning to the content paragraph
+        }
+
         itemDiv.appendChild(contentP);
 
         // Container for edit form inputs (initially hidden)
@@ -273,16 +396,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Update client-side pfData
-            if (approvedToFood && !pfData.Food.includes(suggestion.item)) {
-                pfData.Food.push(suggestion.item);
-                console.log(`"${suggestion.item}" added to pfData.Food.`);
+            // Update client-side currentPfJsonData
+            if (approvedToFood && !currentPfJsonData.Food.includes(suggestion.item)) {
+                currentPfJsonData.Food.push(suggestion.item);
+                console.log(`"${suggestion.item}" added to currentPfJsonData.Food.`);
             }
-            if (approvedToPrep && !pfData.Preperation.includes(suggestion.item)) {
-                pfData.Preperation.push(suggestion.item);
-                console.log(`"${suggestion.item}" added to pfData.Preperation.`);
+            if (approvedToPrep && !currentPfJsonData.Preperation.includes(suggestion.item)) {
+                currentPfJsonData.Preperation.push(suggestion.item);
+                console.log(`"${suggestion.item}" added to currentPfJsonData.Preperation.`);
             }
-            console.log("Updated pfData:", pfData);
+
+            // Save updated currentPfJsonData to localStorage
+            try {
+                localStorage.setItem(pfJsonStorageKey, JSON.stringify(currentPfJsonData));
+                console.log("Updated PF.json data saved to localStorage (Admin).");
+            } catch (e) {
+                console.error("Error saving updated PF.json to localStorage (Admin):", e);
+                alert("Critical error: Could not save main data. Changes might be lost on refresh.");
+            }
+            console.log("Updated currentPfJsonData:", currentPfJsonData);
 
             // Update localStorage for pending suggestions
             try {

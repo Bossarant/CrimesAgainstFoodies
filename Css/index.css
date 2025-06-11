@@ -137,6 +137,48 @@ body {
     color: #aaa;
 }
 
+#list-search-input:focus,
+#new-suggestion-text:focus {
+    outline: none;
+    border-color: lightblue;
+    box-shadow: 0 0 0 2px rgba(173, 216, 230, 0.5); /* Optional: focus ring */
+}
+
+#new-suggestion-text {
+    background-color: #3a3f47; /* Similar to existing search input */
+    color: #f0f0f0;
+    padding: 10px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    font-family: 'Asap', sans-serif;
+    margin-right: 5px; /* Space before radio buttons/button */
+    font-size: 16px; /* Match search input */
+    /* flex-grow: 1; Let's see how it behaves in current flex container first */
+}
+
+/* Styling for the div that contains the new suggestion form elements */
+/* This was added in index.html: <div id="suggestion-form" ...> */
+/* We can use this to refine alignment if .list-controls isn't specific enough */
+#suggestion-form {
+    display: flex; /* Make this a flex container for its children */
+    align-items: center; /* Vertically align items */
+    gap: 10px; /* Space between elements in the suggestion form */
+    flex-grow: 2; /* Allow it to take more space if needed, adjust as necessary */
+}
+
+#suggestion-form label {
+    margin-right: 5px; /* Space after the label text */
+    color: #f0f0f0;
+    font-size: 15px;
+}
+
+#suggestion-form input[type="radio"] {
+    accent-color: lightblue;
+    margin-right: 3px; /* Space between radio and its label */
+    vertical-align: middle; /* Align radio with label text */
+}
+
+
 .list-action-btn {
     padding: 10px 15px;
     background-color: lightblue; /* Same as main button */
