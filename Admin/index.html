@@ -32,7 +32,13 @@
             <!-- Add New Suggestion Form -->
             <div id="add-suggestion-form-container" class="suggestion-form-container">
                 <h3>Add New Suggestion to Temporary List</h3>
-                <input type="text" id="new-suggestion-item-name" placeholder="Enter food item name">
+                <input type="text" id="new-suggestion-item-name" placeholder="Enter food item name" style="margin-bottom: 10px;">
+                <div class="suggestion-type-selection" style="margin-bottom: 10px;">
+                    <label style="margin-right: 5px;">Type:</label>
+                    <input type="radio" name="admin-suggestion-type" value="Food" id="admin-type-food"> <label for="admin-type-food" style="margin-right: 10px;">Food</label>
+                    <input type="radio" name="admin-suggestion-type" value="Preperation" id="admin-type-preperation"> <label for="admin-type-preperation" style="margin-right: 10px;">Preperation</label>
+                    <input type="radio" name="admin-suggestion-type" value="Both" id="admin-type-both" checked> <label for="admin-type-both">Both</label>
+                </div>
                 <!-- You could add more fields here, e.g., for an initial status -->
                 <button id="add-new-suggestion-btn">Add Suggestion to List</button>
             </div>

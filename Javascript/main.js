@@ -1,5 +1,6 @@
 let Json; // Declare Json in a broader scope
 let gameInitialized = false; // To track if the game elements have been added
+let localTempSuggestions = []; // To store user suggestions locally
 
 document.addEventListener('DOMContentLoaded', function() {
     fetch("Json/PF.json") // Adjusted path assuming Json folder is at the same level as index.html
@@ -72,32 +73,55 @@ document.addEventListener('DOMContentLoaded', function() {
     const suggestItemButton = document.getElementById('suggest-item-btn');
     if (suggestItemButton) {
         suggestItemButton.addEventListener('click', function() {
-            const newItem = prompt("Enter a new food item or preparation method to suggest:");
-            if (newItem && newItem.trim() !== "") {
-                const trimmedItem = newItem.trim();
-                console.log("User suggested:", trimmedItem);
-                // In a real application, you would send this to a backend server
-                // e.g., using fetch API to POST the data.
-                // The server would then handle writing to temp.json after validation/approval.
-                // For now, we simulate success with an alert.
-                /*
-                fetch('/api/suggest-item', { // This is a placeholder for your backend endpoint
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ item: trimmedItem })
-                })
-                .then(response => response.json())
-                .then(data => alert(data.message || `Suggestion "${trimmedItem}" submitted!`))
-                .catch(error => {
-                    console.error("Error submitting suggestion:", error);
-                    alert("Could not submit suggestion at this time.");
-                });
-                */
-                alert(`Thank you! Your suggestion "${trimmedItem}" has been noted and will be reviewed.`);
-            } else if (newItem !== null) { // User clicked OK but entered nothing or only spaces
-                alert("Suggestion cannot be empty. Please enter a valid item.");
+            const suggestionTextElement = document.getElementById('new-suggestion-text');
+            const suggestionText = suggestionTextElement.value.trim();
+            const selectedTypeElement = document.querySelector('input[name="suggestion-type"]:checked');
+
+            if (!suggestionText) {
+                alert("Please enter your suggestion.");
+                suggestionTextElement.focus();
+                return;
             }
-            // If newItem is null, user clicked "Cancel" on the prompt, so do nothing.
+
+            if (!selectedTypeElement) {
+                alert("Please select a type for your suggestion (Food, Preperation, or Both).");
+                return;
+            }
+
+            const suggestionType = selectedTypeElement.value;
+
+            const newSuggestion = {
+                id: `temp_${Date.now()}`,
+                item: suggestionText,
+                type: suggestionType,
+                status: 'Pending', // Default status
+                date: new Date().toISOString()
+            };
+
+            localTempSuggestions.push(newSuggestion);
+            console.log("Suggestion added to local temp list:", newSuggestion);
+            console.log("Current localTempSuggestions:", localTempSuggestions); // For debugging
+
+            // Store in localStorage
+            try {
+                localStorage.setItem('pendingSuggestions', JSON.stringify(localTempSuggestions));
+                console.log("Suggestions saved to localStorage.");
+            } catch (e) {
+                console.error("Error saving suggestions to localStorage:", e);
+                alert("There was an issue saving your suggestion locally. It might not be available on the admin page.");
+            }
+
+            alert(`Thank you! Your suggestion "${newSuggestion.item}" as "${newSuggestion.type}" has been submitted for review.`);
+
+            // Clear the input field and reset radio buttons (optional)
+            suggestionTextElement.value = '';
+            // To reset radio buttons, you might need to uncheck them or check the default one.
+            // For simplicity, we'll leave them as is, or the user can select again.
+            // If there's a default checked radio (e.g., 'Both'), re-check it:
+            const defaultRadio = document.getElementById('type-both');
+            if (defaultRadio) {
+                defaultRadio.checked = true;
+            }
         });
     }
 });
