@@ -1,5 +1,38 @@
 body {
     background-color: #24272e;
+    font-family: 'Asap', sans-serif; /* Ensure consistent font from Header.css */
+}
+/* In your Css/index.css or a new stylesheet */
+.content-section {
+    padding: 20px;
+    margin-top: 30px;
+    color: #f0f0f0; /* Light text color for dark background */
+    line-height: 1.6;
+}
+
+/* Scroll animation classes .hidden-reveal and .visible-reveal are no longer used
+   and their definitions have been removed. Sections will appear in normal document flow. */
+
+.content-section h2 {
+    color: lightblue;
+    margin-bottom: 15px;
+}
+
+.content-section ul {
+    list-style-position: inside;
+    padding-left: 20px;
+}
+
+.content-section li {
+    margin-bottom: 5px;
+}
+
+#footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    color: #ccc;
+    font-size: 0.9em;
 }
 
 .game {
@@ -24,21 +57,25 @@ body {
     margin-right: 10px;
 }
 
+
 .div_btn {
     width: 100%;
+    display: flex; /* Use flexbox for centering */
     justify-content: center;
+    margin-top: 30px; /* Space above button */
+    margin-bottom: 50px; /* Space below button before next content */
 }
 
 #btn {
-    font-size: 20;
+    font-size: 20px; /* Added px */
     font-weight: bold;
-    position: absolute;
-    width: 20%;
-    margin-left: 40%;
+    /* position: absolute; Removed to keep button in normal flow */
+    /* width: 20%; Let padding and content define width or set a specific width/max-width */
+    /* margin-left: 40%; Removed */
     color: black;
     text-align: center;
-    border: none !important;
-    margin-top: 20px;
+    border: none; /* Removed !important, try to avoid it */
+    /* margin-top: 20px; Handled by .div_btn margin */
     text-decoration: none;
     padding: 12px 40px;
     background-color: lightblue;
@@ -47,13 +84,16 @@ body {
     cursor: pointer;
     outline: none;
     transition: 0.2s all;
-    display: flex;
     /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
     user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE/Edge */
 }
 
 #btn:hover {
-    cursor: pointer;
+    /* cursor: pointer; is already set on #btn, so it's redundant here */
+    /* You might want to add a visual change on hover, e.g., background-color */
 }
 
 #btn:active {
@@ -61,4 +101,54 @@ body {
     /* Scaling button to 0.98 to its original size */
     box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
     /* Lowering the shadow */
+}
+
+/* Styles for side-by-side lists */
+.list-columns-container {
+    display: flex;
+    justify-content: space-between; /* Or space-around for more space */
+    gap: 20px; /* Adds space between the columns */
+}
+
+.list-column {
+    flex: 1; /* Each column will take up equal space */
+}
+
+/* Styles for list controls (search and suggest button) */
+.list-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px; /* Space below controls, above lists */
+    gap: 15px;
+}
+
+#list-search-input {
+    flex-grow: 1; /* Search input takes available space */
+    padding: 10px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: #3a3f47;
+    color: #f0f0f0;
+    font-size: 16px;
+}
+
+#list-search-input::placeholder {
+    color: #aaa;
+}
+
+.list-action-btn {
+    padding: 10px 15px;
+    background-color: lightblue; /* Same as main button */
+    color: black;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 15px;
+    transition: background-color 0.2s ease;
+}
+
+.list-action-btn:hover {
+    background-color: #9acfea; /* Slightly darker shade for hover */
 }
