@@ -1,15 +1,59 @@
-# CrimesAgainstFoodies
-A stupid website that guarantees your next favorite food
+# Crimes Against Foodies
 
+A fun project that generates interesting food combinations, and then uses AI to create an image of the "culinary crime."
 
-# TODO
-* Figure out how to make other repositories connect with this one
-* fix overall website
-* Remove other pages and make it all on one
-* create admin page
-* figure out passwords and encypting
-* create other repositories
-* research connecting to social networks
-* Figure out how to automatically create a AI image/video (in a different repository)
-* remove jquery and instead use normal javascript 
-### [Github Pages](https://bossarant.github.io/CrimesAgainstFoodies/Home/)
+## Features
+
+*   **Random Food Combination Generator:** Generates random combinations of food items and preparation methods.
+*   **"Lock" an Item:** Users can lock a generated food item to keep it while re-rolling the others.
+*   **Themed Generators:** Users can select a theme (e.g., "Desserts," "Seafood") to get more specific food combinations.
+*   **AI-Generated Images:** Users can generate an AI image of the created "culinary crime."
+*   **Suggestion Box:** Users can suggest new food items and preparation methods.
+*   **Admin Panel:** An admin panel to approve or reject user suggestions.
+
+## Tech Stack
+
+*   **Frontend:** HTML, CSS, JavaScript
+*   **Backend:** Python, Flask, SQLAlchemy
+*   **Database:** SQLite
+*   **Image Generation:** OpenAI DALL-E
+
+## How to Run
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/your-username/CrimesAgainstFoodies.git
+    ```
+2.  **Install the backend dependencies:**
+    ```bash
+    pip install -r backend/requirements.txt
+    ```
+3.  **Set up the database:**
+    ```bash
+    export FLASK_APP=backend/app.py
+    flask db upgrade
+    ```
+4.  **Populate the database with initial data:**
+    ```bash
+    python backend/populate_db.py
+    python backend/populate_categories.py
+    ```
+5.  **Set the OpenAI API Key:**
+    Create a `.env` file in the `backend` directory and add your OpenAI API key:
+    ```
+    OPENAI_API_KEY=your-api-key
+    ```
+6.  **Run the Flask application:**
+    ```bash
+    python -m flask run
+    ```
+7.  **Open `index.html` in your browser.**
+
+## Admin Panel
+
+To access the admin panel, Alt+Click on the logo on the main page. The admin panel allows you to:
+
+*   View dashboard statistics.
+*   View and approve or reject user suggestions.
+
+[Github Pages](https://bossarant.github.io/CrimesAgainstFoodies/)

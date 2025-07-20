@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const loginSection = document.getElementById('login-section');
     const suggestionsSection = document.getElementById('suggestions-section');
+    const dashboardSection = document.getElementById('dashboard-section');
     const loginButton = document.getElementById('github-login-btn');
     const suggestionsListDiv = document.getElementById('suggestions-list');
     const themeToggleButton = document.getElementById('theme-toggle-btn');
@@ -8,131 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const newSuggestionItemNameInput = document.getElementById('new-suggestion-item-name');
     const addNewSuggestionButton = document.getElementById('add-new-suggestion-btn');
 
-    const pfJsonStorageKey = 'crimesAgainstFoodies_PF_Json';
-    let currentPfJsonData = { Food: [], Preperation: [] }; // Holds PF.json data
-
-    // Function to load PF.json from localStorage or fetch and store
-    function initializePfJsonData() {
-        try {
-            const storedPfJson = localStorage.getItem(pfJsonStorageKey);
-            if (storedPfJson) {
-                console.log("Found PF.json in localStorage (Admin).");
-                currentPfJsonData = JSON.parse(storedPfJson);
-                if (!currentPfJsonData || !currentPfJsonData.Food || !currentPfJsonData.Preperation) {
-                    console.warn("PF.json from localStorage is invalid/incomplete (Admin). Re-initializing.");
-                    fetchAndStoreInitialPfJson(); // Fallback if stored data is malformed
-                } else {
-                    console.log("PF.json loaded successfully from localStorage (Admin):", currentPfJsonData);
-                }
-                return; // Exit if loaded from localStorage
-            }
-        } catch (e) {
-            console.error("Error reading PF.json from localStorage (Admin):", e);
-            // Proceed to fetch if localStorage read fails
-        }
-
-        // If not in localStorage or read failed, fetch from file
-        fetchAndStoreInitialPfJson();
-    }
-
-    function fetchAndStoreInitialPfJson() {
-        console.log("Fetching initial PF.json from file (Admin)...");
-        fetch('../Json/PF.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status} while fetching PF.json (Admin)`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                currentPfJsonData = data;
-                console.log("PF.json fetched successfully (Admin):", currentPfJsonData);
-                try {
-                    localStorage.setItem(pfJsonStorageKey, JSON.stringify(currentPfJsonData));
-                    console.log("PF.json fetched and stored in localStorage (Admin).");
-                } catch (e) {
-                    console.error("Error storing PF.json to localStorage (Admin):", e);
-                }
-            })
-            .catch(error => {
-                console.error('Error loading or parsing initial PF.json from file (Admin):', error);
-                // Initialize with default empty structure and save to localStorage if fetch fails
-                currentPfJsonData = { Food: [], Preperation: [] };
-                try {
-                    localStorage.setItem(pfJsonStorageKey, JSON.stringify(currentPfJsonData));
-                    console.log("Stored default empty PF.json structure to localStorage (Admin) due to fetch error.");
-                } catch (e) {
-                    console.error("Error storing default PF.json to localStorage (Admin):", e);
-                }
-            });
-    }
-
-    initializePfJsonData(); // Load PF.json data on script start
-
-    function normalizeString(str) {
-        if (typeof str !== 'string') return '';
-        return str.toLowerCase().trim();
-    }
-
-    function levenshteinDistance(s1, s2) {
-        // s1 and s2 are already normalized (lowercase, trimmed) by the caller if needed
-        const costs = [];
-        for (let i = 0; i <= s1.length; i++) {
-            let lastValue = i;
-            for (let j = 0; j <= s2.length; j++) {
-                if (i === 0) costs[j] = j;
-                else if (j > 0) {
-                    let newValue = costs[j - 1];
-                    if (s1.charAt(i - 1) !== s2.charAt(j - 1)) {
-                        newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
-                    }
-                    costs[j - 1] = lastValue;
-                    lastValue = newValue;
-                }
-            }
-            if (i > 0) costs[s2.length] = lastValue;
-        }
-        return costs[s2.length];
-    }
-
-    function checkIfDuplicate(itemName, pfData) {
-        const normalizedItemName = normalizeString(itemName);
-        if (!normalizedItemName) return { isDuplicate: false }; // Avoid checking empty strings
-
-        const listsToCheck = [
-            { name: 'Food', items: pfData.Food || [] },
-            { name: 'Preperation', items: pfData.Preperation || [] }
-        ];
-
-        for (const list of listsToCheck) {
-            for (const existingItem of list.items) {
-                const normalizedExistingItem = normalizeString(existingItem);
-                if (!normalizedExistingItem) continue;
-
-                // 1. Exact match (case-insensitive)
-                if (normalizedItemName === normalizedExistingItem) {
-                    return { isDuplicate: true, matchedItem: existingItem, list: list.name, type: 'exact' };
-                }
-                // 2. Substring check (normalized)
-                if (normalizedExistingItem.includes(normalizedItemName) || normalizedItemName.includes(normalizedExistingItem)) {
-                     // Avoid flagging very short substrings (e.g., "a" in "apple") as too noisy.
-                    if (Math.min(normalizedItemName.length, normalizedExistingItem.length) > 2) {
-                       return { isDuplicate: true, matchedItem: existingItem, list: list.name, type: 'substring' };
-                    }
-                }
-                // 3. Levenshtein distance for misspellings (threshold: 1 for short, 2 for longer)
-                const distance = levenshteinDistance(normalizedItemName, normalizedExistingItem);
-                let threshold = 1;
-                if (Math.max(normalizedItemName.length, normalizedExistingItem.length) > 5) {
-                    threshold = 2;
-                }
-                if (distance <= threshold && distance > 0) { // distance > 0 to avoid re-flagging exact matches
-                    return { isDuplicate: true, matchedItem: existingItem, list: list.name, type: 'similar (Levenshtein)' };
-                }
-            }
-        }
-        return { isDuplicate: false };
-    }
 
     // Simulate login
     if (loginButton) {
@@ -143,11 +19,40 @@ document.addEventListener('DOMContentLoaded', function() {
             if (loginSection) {
                 loginSection.classList.add('hidden');
             }
+            if (dashboardSection) {
+                dashboardSection.classList.remove('hidden');
+            }
             if (suggestionsSection) {
                 suggestionsSection.classList.remove('hidden');
             }
+            loadDashboardStats();
             loadSuggestions();
         });
+    }
+
+    function loadDashboardStats() {
+        const statsDiv = document.getElementById('dashboard-stats');
+        if (!statsDiv) return;
+        statsDiv.innerHTML = '<p>Loading stats...</p>';
+
+        fetch('http://127.0.0.1:5000/api/admin/stats')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(stats => {
+                statsDiv.innerHTML = `
+                    <p><strong>Pending Suggestions:</strong> ${stats.pending_suggestions}</p>
+                    <p><strong>Total Food Items:</strong> ${stats.total_foods}</p>
+                    <p><strong>Total Preparation Items:</strong> ${stats.total_preparations}</p>
+                `;
+            })
+            .catch(error => {
+                console.error('Error loading dashboard stats:', error);
+                statsDiv.innerHTML = `<p class="error">Could not load stats. Error: ${error.message}</p>`;
+            });
     }
 
     // Add New Suggestion Functionality
@@ -170,39 +75,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const selectedType = selectedTypeElement.value;
 
-            // Check for duplicates before adding
-            const duplicateCheckResult = checkIfDuplicate(itemName, currentPfJsonData);
-            if (duplicateCheckResult.isDuplicate) {
-                const confirmationMessage = `Warning: Your suggestion "${itemName}" might be a duplicate of "${duplicateCheckResult.matchedItem}" (found in ${duplicateCheckResult.list} list as type: ${duplicateCheckResult.type}).\n\nDo you want to add it to the pending list anyway?`;
-                if (!confirm(confirmationMessage)) {
-                    newSuggestionItemNameInput.value = ''; // Clear input
-                     const defaultRadio = document.getElementById('admin-type-both');
-                    if (defaultRadio) defaultRadio.checked = true;
-                    return; // Admin chose not to add
-                }
-            }
-
             const newSuggestion = {
-                id: `new_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`, // Temporary unique ID
                 item: itemName,
-                type: selectedType, // Add the selected type
-                status: 'Pending', // Default status for new items
-                date: new Date().toISOString()
+                type: selectedType
             };
 
-            // Add to localStorage
-            try {
-                let pendingSuggestions = JSON.parse(localStorage.getItem('pendingSuggestions') || '[]');
-                pendingSuggestions.push(newSuggestion);
-                localStorage.setItem('pendingSuggestions', JSON.stringify(pendingSuggestions));
-                console.log("New suggestion added to localStorage pendingSuggestions:", newSuggestion);
-            } catch (e) {
-                console.error("Error updating localStorage pendingSuggestions:", e);
-                alert("There was an issue saving your new suggestion to localStorage.");
-                // Optionally, don't proceed to add to DOM if saving fails, or handle differently
-            }
-
-            addSuggestionToDOM(newSuggestion); // This will prepend it to the list in the UI
+            fetch('http://127.0.0.1:5000/api/suggestions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newSuggestion),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                alert(`Suggestion "${itemName}" of type "${selectedType}" added to the pending list.`);
+                loadSuggestions(); // Refresh the list
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('There was an issue adding the suggestion. Please try again later.');
+            });
 
             // Clear input and reset radio to default
             newSuggestionItemNameInput.value = '';
@@ -219,35 +118,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!suggestionsListDiv) return;
         suggestionsListDiv.innerHTML = '<p>Loading suggestions...</p>';
 
-        try {
-            const localSuggestions = localStorage.getItem('pendingSuggestions');
-            if (localSuggestions) {
-                console.log("Found suggestions in localStorage.");
-                const parsedSuggestions = JSON.parse(localSuggestions);
-                if (parsedSuggestions && parsedSuggestions.length > 0) {
-                    displaySuggestions(parsedSuggestions);
-                    return; // Exit if localStorage suggestions are loaded
-                } else {
-                    console.log("localStorage suggestions were empty or invalid.");
-                }
-            }
-        } catch (e) {
-            console.error("Error reading suggestions from localStorage:", e);
-            // Proceed to fetch from temp.json if localStorage fails
-        }
-
-        // Fallback to fetching temp.json
-        console.log("Fetching suggestions from ../Json/temp.json");
-        fetch('../Json/temp.json')
+        fetch('http://127.0.0.1:5000/api/admin/suggestions')
             .then(response => {
                 if (!response.ok) {
-                    // If temp.json is not found (404), it's not necessarily an error if localStorage was primary.
-                    // Treat as empty suggestions in this case, or handle based on specific needs.
-                    if (response.status === 404) {
-                        console.warn("../Json/temp.json not found, displaying empty suggestions list.");
-                        return []; // Return empty array to display "No pending suggestions"
-                    }
-                    throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 return response.json();
             })
@@ -255,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 displaySuggestions(suggestions);
             })
             .catch(error => {
-                console.error('Error loading suggestions from ../Json/temp.json:', error);
+                console.error('Error loading suggestions from backend:', error);
                 if (suggestionsListDiv) {
                     suggestionsListDiv.innerHTML = `<p class="error">Could not load suggestions. Error: ${error.message}</p>`;
                 }
@@ -322,15 +196,6 @@ document.addEventListener('DOMContentLoaded', function() {
         contentP.classList.add('suggestion-content-display');
         renderSuggestionContent(contentP, suggestion); // renderSuggestionContent now includes the type
 
-        // Check for duplicates and add warning if needed
-        const duplicateResult = checkIfDuplicate(suggestion.item, currentPfJsonData);
-        if (duplicateResult.isDuplicate) {
-            const warningP = document.createElement('p');
-            warningP.classList.add('duplicate-warning');
-            warningP.innerHTML = `⚠️ Possible duplicate of "<strong>${escapeHTML(duplicateResult.matchedItem)}</strong>" (in ${escapeHTML(duplicateResult.list)} list, type: ${escapeHTML(duplicateResult.type)}).`;
-            contentP.appendChild(warningP); // Append warning to the content paragraph
-        }
-
         itemDiv.appendChild(contentP);
 
         // Container for edit form inputs (initially hidden)
@@ -372,79 +237,54 @@ document.addEventListener('DOMContentLoaded', function() {
         approveButton.textContent = 'Approve';
         approveButton.classList.add('approve-btn');
         approveButton.addEventListener('click', () => {
-            const foodCheckbox = document.getElementById(`approve-Food-${suggestion.id}`);
-            const prepCheckbox = document.getElementById(`approve-Preperation-${suggestion.id}`);
-            const bothCheckbox = document.getElementById(`approve-Both-${suggestion.id}`);
-
-            let approvedToFood = false;
-            let approvedToPrep = false;
-
-            if (bothCheckbox && bothCheckbox.checked) {
-                approvedToFood = true;
-                approvedToPrep = true;
-            } else {
-                if (foodCheckbox && foodCheckbox.checked) {
-                    approvedToFood = true;
+            fetch(`http://127.0.0.1:5000/api/admin/approve/${suggestion.id}`, {
+                method: 'POST',
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
-                if (prepCheckbox && prepCheckbox.checked) {
-                    approvedToPrep = true;
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                alert(`"${suggestion.item}" approved and removed from pending list.`);
+                itemDiv.remove();
+                if (suggestionsListDiv && suggestionsListDiv.children.length === 0) {
+                    suggestionsListDiv.innerHTML = '<p>No pending suggestions found.</p>';
                 }
-            }
-
-            if (!approvedToFood && !approvedToPrep) {
-                alert("Please select an approval type (Food, Preperation, or Both).");
-                return;
-            }
-
-            // Update client-side currentPfJsonData
-            if (approvedToFood && !currentPfJsonData.Food.includes(suggestion.item)) {
-                currentPfJsonData.Food.push(suggestion.item);
-                console.log(`"${suggestion.item}" added to currentPfJsonData.Food.`);
-            }
-            if (approvedToPrep && !currentPfJsonData.Preperation.includes(suggestion.item)) {
-                currentPfJsonData.Preperation.push(suggestion.item);
-                console.log(`"${suggestion.item}" added to currentPfJsonData.Preperation.`);
-            }
-
-            // Save updated currentPfJsonData to localStorage
-            try {
-                localStorage.setItem(pfJsonStorageKey, JSON.stringify(currentPfJsonData));
-                console.log("Updated PF.json data saved to localStorage (Admin).");
-            } catch (e) {
-                console.error("Error saving updated PF.json to localStorage (Admin):", e);
-                alert("Critical error: Could not save main data. Changes might be lost on refresh.");
-            }
-            console.log("Updated currentPfJsonData:", currentPfJsonData);
-
-            // Update localStorage for pending suggestions
-            try {
-                let pendingSuggestions = JSON.parse(localStorage.getItem('pendingSuggestions') || '[]');
-                const updatedPendingSuggestions = pendingSuggestions.filter(s => s.id !== suggestion.id);
-                localStorage.setItem('pendingSuggestions', JSON.stringify(updatedPendingSuggestions));
-                console.log(`Suggestion ID ${suggestion.id} removed from localStorage pendingSuggestions.`);
-            } catch (e) {
-                console.error("Error updating localStorage pendingSuggestions:", e);
-            }
-
-            // Update UI
-            itemDiv.remove();
-            alert(`"${suggestion.item}" approved and removed from pending list.`);
-            console.log(`Approved and removed: ${suggestion.item} (ID: ${suggestion.id})`);
-
-            // If all items are removed, display "No pending suggestions found."
-            if (suggestionsListDiv && suggestionsListDiv.children.length === 0) {
-                suggestionsListDiv.innerHTML = '<p>No pending suggestions found.</p>';
-            }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('There was an issue approving the suggestion. Please try again later.');
+            });
         });
 
         const rejectButton = document.createElement('button');
         rejectButton.textContent = 'Reject';
         rejectButton.classList.add('reject-btn');
         rejectButton.addEventListener('click', () => {
-            console.log(`Rejected: ${suggestion.item} (ID: ${suggestion.id})`);
-            alert(`"${suggestion.item}" rejected (simulated).`);
-            itemDiv.remove(); // Remove from view
-            // In a real app: API call to backend to remove item from temp.json
+            fetch(`http://127.0.0.1:5000/api/admin/reject/${suggestion.id}`, {
+                method: 'DELETE',
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                alert(`"${suggestion.item}" rejected.`);
+                itemDiv.remove();
+                if (suggestionsListDiv && suggestionsListDiv.children.length === 0) {
+                    suggestionsListDiv.innerHTML = '<p>No pending suggestions found.</p>';
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('There was an issue rejecting the suggestion. Please try again later.');
+            });
         });
 
         const editButton = document.createElement('button');
