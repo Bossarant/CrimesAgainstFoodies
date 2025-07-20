@@ -1,35 +1,148 @@
 let Json; // Declare Json in a broader scope
 let gameInitialized = false; // To track if the game elements have been added
-let localTempSuggestions = []; // To store user suggestions locally
-const pfJsonStorageKey = 'crimesAgainstFoodies_PF_Json';
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Attempt to load PF.json data from localStorage
-    try {
-        const storedPfJson = localStorage.getItem(pfJsonStorageKey);
-        if (storedPfJson) {
-            console.log("Found PF.json in localStorage.");
-            Json = JSON.parse(storedPfJson);
-            if (Json && Json.Food && Json.Preperation) { // Basic validation
-                 populateListSection(); // Populate the list section with JSON data from localStorage
+    fetchAndStorePfJson();
+
+    // User Auth
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const userProfile = document.getElementById('user-profile');
+    const welcomeMessage = document.getElementById('welcome-message');
+    const showRegisterBtn = document.getElementById('show-register-btn');
+    const loginBtn = document.getElementById('login-btn');
+    const registerBtn = document.getElementById('register-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    const saveFavoriteBtn = document.getElementById('save-favorite-btn');
+
+    showRegisterBtn.addEventListener('click', () => {
+        loginForm.classList.add('hidden');
+        registerForm.classList.remove('hidden');
+    });
+
+    registerBtn.addEventListener('click', () => {
+        const username = document.getElementById('register-username').value;
+        const email = document.getElementById('register-email').value;
+        const password = document.getElementById('register-password').value;
+
+        fetch('http://127.0.0.1:5000/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.msg);
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+        });
+    });
+
+    loginBtn.addEventListener('click', () => {
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+
+        fetch('http://127.0.0.1:5000/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.access_token) {
+                localStorage.setItem('jwt_token', data.access_token);
+                loginForm.classList.add('hidden');
+                userProfile.classList.remove('hidden');
+                welcomeMessage.textContent = `Welcome, ${username}!`;
+                saveFavoriteBtn.classList.remove('hidden');
             } else {
-                // Data from localStorage is invalid/incomplete, fetch from file
-                console.warn("PF.json from localStorage is invalid. Fetching from file.");
-                fetchAndStorePfJson();
+                alert(data.msg);
             }
-        } else {
-            // Not in localStorage, fetch from file
-            console.log("PF.json not found in localStorage. Fetching from file.");
-            fetchAndStorePfJson();
-        }
-    } catch (e) {
-        console.error("Error reading PF.json from localStorage:", e);
-        // Fallback to fetching from file if localStorage read fails
-        fetchAndStorePfJson();
+        });
+    });
+
+    logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('jwt_token');
+        loginForm.classList.remove('hidden');
+        userProfile.classList.add('hidden');
+        saveFavoriteBtn.classList.add('hidden');
+    });
+
+    saveFavoriteBtn.addEventListener('click', () => {
+        const token = localStorage.getItem('jwt_token');
+        const item1 = document.getElementById('one').textContent.replace('🔓','').replace('🔒','').trim();
+        const item2 = document.getElementById('two').textContent.replace('🔓','').replace('🔒','').trim();
+        const item3 = document.getElementById('three').textContent.replace('🔓','').replace('🔒','').trim();
+        const item4 = document.getElementById('four').textContent.replace('🔓','').replace('🔒','').trim();
+
+        fetch('http://127.0.0.1:5000/api/favorites', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ item1, item2, item3, item4 })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.msg);
+        });
+    });
+
+    const upvoteBtn = document.getElementById('upvote-btn');
+    upvoteBtn.addEventListener('click', () => {
+        const item1 = document.getElementById('one').textContent.replace('🔓','').replace('🔒','').trim();
+        const item2 = document.getElementById('two').textContent.replace('🔓','').replace('🔒','').trim();
+        const item3 = document.getElementById('three').textContent.replace('🔓','').replace('🔒','').trim();
+        const item4 = document.getElementById('four').textContent.replace('🔓','').replace('🔒','').trim();
+
+        // This is a simplified approach. A more robust solution would be to
+        // create the combination in the database when it's generated, and then
+        // retrieve its ID to use for upvoting. For now, we'll just create a
+        // new combination on every upvote.
+        fetch('http://127.0.0.1:5000/api/favorites', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ item1, item2, item3, item4 })
+        })
+        .then(response => response.json())
+        .then(data => {
+             return fetch(`http://127.0.0.1:5000/api/upvote/${data.combination_id}`, {
+                method: 'POST'
+            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.msg);
+            loadHallOfFame();
+        });
+    });
+
+    function loadHallOfFame() {
+        const hallOfFameList = document.getElementById('hall-of-fame-list');
+        hallOfFameList.innerHTML = '';
+        fetch('http://127.0.0.1:5000/api/hall-of-fame')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(combo => {
+                    const li = document.createElement('li');
+                    li.textContent = `${combo.item1} ${combo.item2} and ${combo.item3} ${combo.item4} - ${combo.upvotes} upvotes`;
+                    hallOfFameList.appendChild(li);
+                });
+            });
     }
 
+    loadHallOfFame();
+
+
     function fetchAndStorePfJson() {
-        fetch("Json/PF.json") // Adjusted path
+        const selectedTheme = document.getElementById('theme-dropdown').value;
+        let url = 'http://127.0.0.1:5000/api/items';
+        if (selectedTheme) {
+            url += `?category=${selectedTheme}`;
+        }
+
+        fetch(url) // Fetch from the new backend endpoint
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -39,15 +152,9 @@ document.addEventListener('DOMContentLoaded', function() {
             .then((data) => {
                 Json = data;
                 populateListSection(); // Populate with fetched data
-                try {
-                    localStorage.setItem(pfJsonStorageKey, JSON.stringify(Json));
-                    console.log("PF.json fetched and stored in localStorage.");
-                } catch (e) {
-                    console.error("Error storing PF.json to localStorage:", e);
-                }
             })
             .catch((err) => {
-                console.error("Failed to load PF.json from file:", err);
+                console.error("Failed to load items from backend:", err);
                 // Attempt to provide a default empty structure if fetch fails, to prevent errors elsewhere
                 if (!Json) { // If Json is still not defined after all attempts
                     Json = { Food: [], Preperation: [] };
@@ -57,8 +164,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
+    const themeDropdown = document.getElementById('theme-dropdown');
+    if (themeDropdown) {
+        themeDropdown.addEventListener('change', fetchAndStorePfJson);
+    }
+
     const btn = document.getElementById('btn');
-    const sound = document.getElementById('sound');
     const parentElement = document.querySelector('.parent');
     const footerElement = document.getElementById('footer');
 
@@ -68,10 +179,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (btn) {
         btn.addEventListener('click', function() {
-            if (sound) {
-                sound.play();
-            }
-
             if (!gameInitialized) {
                 parentElement.insertAdjacentHTML('beforeend', '<div id="two" class="all"></div>');
                 parentElement.insertAdjacentHTML('beforeend', '<div id="and"></div>');
@@ -129,27 +236,31 @@ document.addEventListener('DOMContentLoaded', function() {
             const suggestionType = selectedTypeElement.value;
 
             const newSuggestion = {
-                id: `temp_${Date.now()}`,
                 item: suggestionText,
-                type: suggestionType,
-                status: 'Pending', // Default status
-                date: new Date().toISOString()
+                type: suggestionType
             };
 
-            localTempSuggestions.push(newSuggestion);
-            console.log("Suggestion added to local temp list:", newSuggestion);
-            console.log("Current localTempSuggestions:", localTempSuggestions); // For debugging
-
-            // Store in localStorage
-            try {
-                localStorage.setItem('pendingSuggestions', JSON.stringify(localTempSuggestions));
-                console.log("Suggestions saved to localStorage.");
-            } catch (e) {
-                console.error("Error saving suggestions to localStorage:", e);
-                alert("There was an issue saving your suggestion locally. It might not be available on the admin page.");
-            }
-
-            alert(`Thank you! Your suggestion "${newSuggestion.item}" as "${newSuggestion.type}" has been submitted for review.`);
+            fetch('http://127.0.0.1:5000/api/suggestions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newSuggestion),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                alert(`Thank you! Your suggestion "${newSuggestion.item}" as "${newSuggestion.type}" has been submitted for review.`);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('There was an issue submitting your suggestion. Please try again later.');
+            });
 
             // Clear the input field and reset radio buttons (optional)
             suggestionTextElement.value = '';
@@ -221,6 +332,22 @@ function getfood() {
     return varfood;
 }
 
+let lockedItems = {
+    one: false,
+    two: false,
+    three: false,
+    four: false
+};
+
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('lock-btn')) {
+        const targetId = event.target.dataset.target;
+        lockedItems[targetId] = !lockedItems[targetId];
+        event.target.textContent = lockedItems[targetId] ? '🔒' : '🔓';
+        document.getElementById(targetId).classList.toggle('locked', lockedItems[targetId]);
+    }
+});
+
 function game() {
     const oneElement = document.getElementById('one');
     const twoElement = document.getElementById('two');
@@ -228,9 +355,60 @@ function game() {
     const fourElement = document.getElementById('four');
     const andElement = document.getElementById('and');
 
-    if (oneElement) oneElement.innerHTML = getPreperation();
-    if (twoElement) twoElement.innerHTML = getfood();
-    if (threeElement) threeElement.innerHTML = getPreperation();
-    if (fourElement) fourElement.innerHTML = getfood();
+    if (oneElement && !lockedItems.one) oneElement.innerHTML = `${getPreperation()} <button class="lock-btn" data-target="one">🔓</button>`;
+    if (twoElement && !lockedItems.two) twoElement.innerHTML = `${getfood()} <button class="lock-btn" data-target="two">🔓</button>`;
+    if (threeElement && !lockedItems.three) threeElement.innerHTML = `${getPreperation()} <button class="lock-btn" data-target="three">🔓</button>`;
+    if (fourElement && !lockedItems.four) fourElement.innerHTML = `${getfood()} <button class="lock-btn" data-target="four">🔓</button>`;
     if (andElement) andElement.innerHTML = "and";
+
+    const generateImageBtn = document.getElementById('generate-image-btn');
+    const upvoteBtn = document.getElementById('upvote-btn');
+    generateImageBtn.classList.remove('hidden');
+    upvoteBtn.classList.remove('hidden');
+    generateImageBtn.onclick = () => {
+        const item1 = document.getElementById('one').textContent.replace('🔓','').replace('🔒','').trim();
+        const item2 = document.getElementById('two').textContent.replace('🔓','').replace('🔒','').trim();
+        const item3 = document.getElementById('three').textContent.replace('🔓','').replace('🔒','').trim();
+        const item4 = document.getElementById('four').textContent.replace('🔓','').replace('🔒','').trim();
+        const prompt = `${item1} ${item2} and ${item3} ${item4}`;
+
+        const socialSharingButtons = document.getElementById('social-sharing-buttons');
+        socialSharingButtons.classList.remove('hidden');
+
+        const twitterShareBtn = document.getElementById('twitter-share-btn');
+        twitterShareBtn.href = `https://twitter.com/intent/tweet?text=Check%20out%20this%20culinary%20crime%20I%20generated%3A%20${prompt}&url=https://bossarant.github.io/CrimesAgainstFoodies/`;
+
+        const redditShareBtn = document.getElementById('reddit-share-btn');
+        redditShareBtn.href = `https://www.reddit.com/submit?url=https://bossarant.github.io/CrimesAgainstFoodies/&title=A%20New%20Culinary%20Crime%3A%20${prompt}`;
+
+        const imageContainer = document.getElementById('image-container');
+        const generatedImage = document.getElementById('generated-image');
+
+        // Show loading indicator
+        imageContainer.classList.remove('hidden');
+        generatedImage.src = 'loading.gif'; // A placeholder loading animation
+
+        fetch('http://127.0.0.1:5000/api/generate-image', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prompt: prompt }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.image_url) {
+                generatedImage.src = data.image_url;
+            } else {
+                console.error('Error generating image:', data.error);
+                alert('There was an issue generating the image. Please try again later.');
+                imageContainer.classList.add('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('There was an issue generating the image. Please try again later.');
+            imageContainer.classList.add('hidden');
+        });
+    };
 }

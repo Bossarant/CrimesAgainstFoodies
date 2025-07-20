@@ -10,22 +10,41 @@
 
 <body id="head">
   <header id="header-bar">
-    <a href="index.html" title="Go to Homepage" class="logo-link"> <!-- Link to home, adjust if needed -->
-      <img id="logo-image" src="Crimes.png" alt="Crimes Against Foodies Logo"> <!-- Adjusted path -->
+    <a href="index.html" title="Go to Homepage" class="logo-link">
+      <img id="logo-image" src="Crimes.png" alt="Crimes Against Foodies Logo">
     </a>
     <h1 id="header-title">Crimes Against Foodies</h1>
-    <!-- Navigation links like "About" and "List" are removed from here -->
-    <!-- The .nav-links class from Header.css can be used if you add other links later -->
+    <div id="user-auth-section">
+        <div id="login-form">
+            <input type="text" id="login-username" placeholder="Username">
+            <input type="password" id="login-password" placeholder="Password">
+            <button id="login-btn">Login</button>
+            <button id="show-register-btn">Register</button>
+        </div>
+        <div id="register-form" class="hidden">
+            <input type="text" id="register-username" placeholder="Username">
+            <input type="password" id="register-password" placeholder="Password">
+            <input type="email" id="register-email" placeholder="Email">
+            <button id="register-btn">Register</button>
+        </div>
+        <div id="user-profile" class="hidden">
+            <span id="welcome-message"></span>
+            <button id="logout-btn">Logout</button>
+        </div>
+    </div>
   </header>
-
-  <audio id="sound" preload="auto">
-    <source src="ButtonClick.mp3" type="audio/mpeg"> <!-- Adjusted path -->
-  </audio>
 
   <main class="game-content">
     <div class="parent">
       <div id="one" class="all">press the button</div>
-      <!-- Elements #two, #and, #three, #four will be added here by JS -->
+    </div>
+    <div class="theme-selector">
+      <label for="theme-dropdown">Select a Theme:</label>
+      <select id="theme-dropdown">
+        <option value="">Classic</option>
+        <option value="dessert">Desserts</option>
+        <option value="seafood">Seafood</option>
+      </select>
     </div>
     <div class="div_btn">
       <button id="btn">click here to find your next favorite food</button>
@@ -72,6 +91,27 @@
         </ul>
       </div>
     </div>
+  </section>
+
+  <section id="image-generation-section">
+      <button id="generate-image-btn" class="hidden">Generate Image</button>
+      <button id="save-favorite-btn" class="hidden">Save to Favorites</button>
+      <button id="upvote-btn" class="hidden">Upvote</button>
+      <div id="image-container" class="hidden">
+          <img id="generated-image" src="" alt="AI-generated image of the food crime">
+      </div>
+      <div id="social-sharing-buttons" class="hidden">
+        <a href="https://twitter.com/intent/tweet?text=Check%20out%20this%20culinary%20crime%20I%20generated%3A%20&url=https://bossarant.github.io/CrimesAgainstFoodies/" target="_blank" id="twitter-share-btn">Share on Twitter</a>
+        <a href="https://www.reddit.com/submit?url=https://bossarant.github.io/CrimesAgainstFoodies/&title=A%20New%20Culinary%20Crime%3A%20" target="_blank" id="reddit-share-btn">Share on Reddit</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=https://bossarant.github.io/CrimesAgainstFoodies/" target="_blank" id="facebook-share-btn">Share on Facebook</a>
+      </div>
+  </section>
+
+  <section id="hall-of-fame-section">
+      <h2>Hall of Fame</h2>
+      <ul id="hall-of-fame-list">
+          <!-- Top combinations will be populated here -->
+      </ul>
   </section>
 
   <footer id="footer">
