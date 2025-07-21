@@ -22,7 +22,7 @@ A fun project that generates interesting food combinations, and then uses AI to 
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/CrimesAgainstFoodies.git
+    git clone https://github.com/BGBondurant/CrimesAgainstFoodies.git
     ```
 2.  **Install the backend dependencies:**
     ```bash
