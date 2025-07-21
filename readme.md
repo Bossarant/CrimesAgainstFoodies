@@ -77,16 +77,11 @@ These instructions are specifically for running the project on Windows using the
     ```powershell
     python -m flask run
     ```
-<<<<<<< HEAD
-7.  **Open your browser and navigate to `http://127.0.0.1:5000`** (or the address shown in the terminal when you started the Flask application).
-=======
+
     Keep this terminal running. You should see output indicating the server is active at `http://127.0.0.1:5000/`.
 
 7.  **Open the website:**
     In your file explorer, find and open the `index.html` file with your web browser.
-
----
->>>>>>> 3dd87373302ee79e821e968ca92f7c6cde2994ec
 
 ## Admin Panel
 
