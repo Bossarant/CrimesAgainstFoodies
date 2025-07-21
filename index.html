@@ -15,26 +15,35 @@
       <nav class="main-nav">
         <a href="#hall-of-fame-section">Hall of Fame</a>
         <a href="#favorites-section">Favorites</a>
+        <a href="Admin/index.html" id="admin-link" class="hidden">Admin</a>
       </nav>
       <div class="user-auth">
-        <div id="login-form">
-            <input type="text" id="login-username" placeholder="Username">
-            <input type="password" id="login-password" placeholder="Password">
-            <button id="login-btn" class="btn">Login</button>
-            <button id="show-register-btn" class="btn">Register</button>
-        </div>
-        <div id="register-form" class="hidden">
-            <input type="text" id="register-username" placeholder="Username">
-            <input type="password" id="register-password" placeholder="Password">
-            <input type="email" id="register-email" placeholder="Email">
-            <button id="register-btn" class="btn">Register</button>
-        </div>
+        <button id="show-login-modal-btn" class="btn">Login / Sign Up</button>
         <div id="user-profile" class="hidden">
             <span id="welcome-message"></span>
             <button id="logout-btn" class="btn">Logout</button>
         </div>
       </div>
     </header>
+
+    <div id="login-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div id="login-form">
+                <h2>Login</h2>
+                <input type="text" id="login-username" placeholder="Username">
+                <input type="password" id="login-password" placeholder="Password">
+                <button id="login-btn" class="btn">Login</button>
+            </div>
+            <div id="register-form">
+                <h2>Register</h2>
+                <input type="text" id="register-username" placeholder="Username">
+                <input type="password" id="register-password" placeholder="Password">
+                <input type="email" id="register-email" placeholder="Email">
+                <button id="register-btn" class="btn">Register</button>
+            </div>
+        </div>
+    </div>
 
     <aside class="sidebar">
       <h3>Ingredients</h3>
@@ -59,12 +68,12 @@
           </select>
         </div>
         <div class="div_btn">
-          <button id="btn">click here to find your next favorite food</button>
+          <button id="btn" class="hero-btn">Generate a Culinary Crime!</button>
         </div>
         <section id="image-generation-section">
-            <button id="generate-image-btn" class="hidden">Generate Image</button>
-            <button id="save-favorite-btn" class="hidden">Save to Favorites</button>
-            <button id="upvote-btn" class="hidden">Upvote</button>
+            <button id="generate-image-btn" class="btn btn-secondary hidden">Generate Image</button>
+            <button id="save-favorite-btn" class="btn hidden">Save to Favorites</button>
+            <button id="upvote-btn" class="btn hidden">Upvote</button>
             <div id="image-container" class="hidden">
                 <img id="generated-image" src="" alt="AI-generated image of the food crime">
             </div>
@@ -86,7 +95,7 @@
           <input type="radio" name="suggestion-type" value="Preperation" id="type-preperation">
           <label for="type-both">Both</label>
           <input type="radio" name="suggestion-type" value="Both" id="type-both" checked>
-          <button id="suggest-item-btn" class="list-action-btn">Suggest New Item</button>
+          <button id="suggest-item-btn" class="btn btn-secondary">Suggest New Item</button>
         </div>
       </div>
 

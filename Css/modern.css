@@ -27,13 +27,13 @@ body {
     align-items: center;
     padding: 10px 20px;
     background-color: #2c2c2c;
-    border-bottom: 2px solid #ff6347; /* Accent color */
+    border-bottom: 2px solid #007BFF; /* Accent color */
 }
 
 .main-header .logo {
     font-size: 1.5em;
     font-weight: bold;
-    color: #ff6347;
+    color: #007BFF;
     text-decoration: none;
 }
 
@@ -45,21 +45,22 @@ body {
 }
 
 .main-nav a:hover {
-    color: #ff6347;
+    color: #007BFF;
 }
 
 .user-auth .btn {
-    background-color: #ff6347;
+    background-color: #007BFF;
     color: #fff;
     border: none;
     padding: 10px 15px;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .user-auth .btn:hover {
-    background-color: #e5533d;
+    background-color: #0056b3;
 }
 
 /* Interactivity */
@@ -74,8 +75,8 @@ body {
 
 #ingredient-search:focus {
     outline: none;
-    border-color: #ff6347;
-    box-shadow: 0 0 0 2px rgba(255, 99, 71, 0.5);
+    border-color: #007BFF;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
 }
 
 /* Sidebar for Ingredients */
@@ -84,10 +85,11 @@ body {
     background-color: #2c2c2c;
     padding: 20px;
     border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar h3 {
-    color: #ff6347;
+    color: #007BFF;
     border-bottom: 1px solid #444;
     padding-bottom: 10px;
 }
@@ -131,7 +133,7 @@ body {
 }
 
 .ingredient-list.open {
-    max-height: 500px; /* Adjust as needed */
+    max-height: 1000px; /* Adjust as needed */
     padding-top: 10px;
 }
 
@@ -151,8 +153,100 @@ body {
     background-color: #2c2c2c;
     padding: 20px;
     border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .card h2 {
-    color: #ff6347;
+    color: #007BFF;
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #2c2c2c;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 80%;
+    max-width: 400px;
+    position: relative;
+}
+
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+.hero-btn {
+    background-color: #007BFF;
+    color: white;
+    padding: 15px 30px;
+    font-size: 1.5em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    margin-top: 20px;
+}
+
+.hero-btn:hover {
+    background-color: #0056b3;
+}
+
+.btn {
+    background-color: #007BFF;
+    color: #fff;
+    border: 2px solid #007BFF;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: #007BFF;
+    border: 2px solid #007BFF;
+}
+
+.btn-secondary:hover {
+    background-color: #007BFF;
+    color: #fff;
 }

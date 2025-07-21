@@ -9,15 +9,26 @@ document.addEventListener('DOMContentLoaded', function() {
     const registerForm = document.getElementById('register-form');
     const userProfile = document.getElementById('user-profile');
     const welcomeMessage = document.getElementById('welcome-message');
-    const showRegisterBtn = document.getElementById('show-register-btn');
     const loginBtn = document.getElementById('login-btn');
     const registerBtn = document.getElementById('register-btn');
     const logoutBtn = document.getElementById('logout-btn');
     const saveFavoriteBtn = document.getElementById('save-favorite-btn');
+    const loginModal = document.getElementById('login-modal');
+    const showLoginModalBtn = document.getElementById('show-login-modal-btn');
+    const closeBtn = document.querySelector('.close-btn');
 
-    showRegisterBtn.addEventListener('click', () => {
-        loginForm.classList.add('hidden');
-        registerForm.classList.remove('hidden');
+    showLoginModalBtn.addEventListener('click', () => {
+        loginModal.classList.remove('hidden');
+    });
+
+    closeBtn.addEventListener('click', () => {
+        loginModal.classList.add('hidden');
+    });
+
+    window.addEventListener('click', (event) => {
+        if (event.target == loginModal) {
+            loginModal.classList.add('hidden');
+        }
     });
 
     registerBtn.addEventListener('click', () => {
@@ -51,15 +62,23 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.access_token) {
                 localStorage.setItem('jwt_token', data.access_token);
-                loginForm.classList.add('hidden');
+                loginModal.classList.add('hidden');
                 userProfile.classList.remove('hidden');
                 welcomeMessage.textContent = `Welcome, ${username}!`;
                 saveFavoriteBtn.classList.remove('hidden');
+                checkAdmin(username);
             } else {
                 alert(data.msg);
             }
         });
     });
+
+    function checkAdmin(username) {
+        const adminLink = document.getElementById('admin-link');
+        if (username === 'admin') {
+            adminLink.classList.remove('hidden');
+        }
+    }
 
     logoutBtn.addEventListener('click', () => {
         localStorage.removeItem('jwt_token');
@@ -274,20 +293,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Alt+Click logo to go to Admin page
-    const logoImageElement = document.getElementById('logo-image'); // Corrected variable name
-    if (logoImageElement) {
-        logoImageElement.addEventListener('click', function(event) {
-            if (event.altKey) {
-                // The logo is inside an anchor tag <a href="index.html">.
-                // We need to prevent that default navigation to index.html first.
-                event.preventDefault();
-                window.location.href = 'Admin/index.html';
-                console.log('Alt+click on logo detected, navigating to admin page.');
-            }
-            // If only click (no Alt), the parent anchor tag will handle navigation to index.html normally.
-        });
-    }
 });
 
 function populateListSection(preparationsToShow = Json.Preperation, foodsToShow = Json.Food) {
