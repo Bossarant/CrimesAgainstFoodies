@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Search functionality for lists
-    const searchInput = document.getElementById('list-search-input');
+    const searchInput = document.getElementById('ingredient-search');
     if (searchInput) {
         searchInput.addEventListener('input', function(event) {
             const searchTerm = event.target.value.toLowerCase().trim();
@@ -290,31 +290,39 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function renderList(listElement, items, noMatchMessage = "No items match your search.") {
-    if (!listElement) return;
-    listElement.innerHTML = ''; // Clear existing items
-    if (items && items.length > 0) {
-        items.forEach(itemText => {
+function populateListSection(preparationsToShow = Json.Preperation, foodsToShow = Json.Food) {
+    const categoriesContainer = document.getElementById('ingredient-categories');
+    categoriesContainer.innerHTML = ''; // Clear existing categories
+
+    const categories = {
+        'Preparations': preparationsToShow,
+        'Foods': foodsToShow
+    };
+
+    for (const category in categories) {
+        const items = categories[category];
+        const categoryElement = document.createElement('div');
+        categoryElement.className = 'ingredient-category';
+
+        const titleElement = document.createElement('div');
+        titleElement.className = 'ingredient-category-title';
+        titleElement.textContent = `${category} (${items.length})`;
+        titleElement.addEventListener('click', () => {
+            listElement.classList.toggle('open');
+        });
+
+        const listElement = document.createElement('ul');
+        listElement.className = 'ingredient-list';
+        items.forEach(item => {
             const li = document.createElement('li');
-            li.textContent = itemText;
+            li.textContent = item;
             listElement.appendChild(li);
         });
-    } else {
-        const li = document.createElement('li');
-        li.textContent = noMatchMessage;
-        listElement.appendChild(li);
+
+        categoryElement.appendChild(titleElement);
+        categoryElement.appendChild(listElement);
+        categoriesContainer.appendChild(categoryElement);
     }
-}
-
-function populateListSection(preparationsToShow = Json.Preperation, foodsToShow = Json.Food) {
-    const preparationsListElement = document.getElementById('preparations-list');
-    const foodsListElement = document.getElementById('foods-list');
-
-    const initialLoad = !Json || (!Json.Preperation && !Json.Food);
-    const noMatchMsg = initialLoad ? "Loading items..." : "No items match your search.";
-
-    renderList(preparationsListElement, preparationsToShow, noMatchMsg);
-    renderList(foodsListElement, foodsToShow, noMatchMsg);
 }
 
 

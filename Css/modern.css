@@ -1,0 +1,158 @@
+/* General Body Styles */
+body {
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Main Grid Layout */
+.main-grid {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+        "header header"
+        "sidebar main-content";
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Header and Navigation */
+.main-header {
+    grid-area: header;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #2c2c2c;
+    border-bottom: 2px solid #ff6347; /* Accent color */
+}
+
+.main-header .logo {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #ff6347;
+    text-decoration: none;
+}
+
+.main-nav a {
+    color: #f0f0f0;
+    text-decoration: none;
+    margin-left: 20px;
+    transition: color 0.3s;
+}
+
+.main-nav a:hover {
+    color: #ff6347;
+}
+
+.user-auth .btn {
+    background-color: #ff6347;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.user-auth .btn:hover {
+    background-color: #e5533d;
+}
+
+/* Interactivity */
+.btn:active, .list-action-btn:active {
+    transform: scale(0.98);
+    box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
+}
+
+.ingredient-category-title:hover {
+    background-color: #4a4f57;
+}
+
+#ingredient-search:focus {
+    outline: none;
+    border-color: #ff6347;
+    box-shadow: 0 0 0 2px rgba(255, 99, 71, 0.5);
+}
+
+/* Sidebar for Ingredients */
+.sidebar {
+    grid-area: sidebar;
+    background-color: #2c2c2c;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.sidebar h3 {
+    color: #ff6347;
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+}
+
+#ingredient-search {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background-color: #3a3f47;
+    color: #f0f0f0;
+}
+
+.ingredient-category {
+    margin-bottom: 10px;
+}
+
+.ingredient-category-title {
+    cursor: pointer;
+    padding: 10px;
+    background-color: #3a3f47;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.ingredient-category-title:hover {
+    background-color: #4a4f57;
+}
+
+.ingredient-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.ingredient-list.open {
+    max-height: 500px; /* Adjust as needed */
+    padding-top: 10px;
+}
+
+.ingredient-list li {
+    padding: 5px 10px;
+}
+
+/* Main Content Area */
+.main-content {
+    grid-area: main-content;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.card {
+    background-color: #2c2c2c;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.card h2 {
+    color: #ff6347;
+}

@@ -3,116 +3,108 @@
 <head>
   <meta charset="utf-8" />
   <title>Crimes Against Foodies</title>
-  <link rel="stylesheet" href="Css/index.css" />
-  <link rel="stylesheet" href="Css/Header.css" />
+  <link rel="stylesheet" href="Css/modern.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <script src="Javascript/main.js"></script>
 </head>
 
-<body id="head">
-  <header id="header-bar">
-    <a href="index.html" title="Go to Homepage" class="logo-link">
-      <img id="logo-image" src="Crimes.png" alt="Crimes Against Foodies Logo">
-    </a>
-    <h1 id="header-title">Crimes Against Foodies</h1>
-    <div id="user-auth-section">
+<body>
+  <div class="main-grid">
+    <header class="main-header">
+      <a href="index.html" class="logo">Crimes Against Foodies</a>
+      <nav class="main-nav">
+        <a href="#hall-of-fame-section">Hall of Fame</a>
+        <a href="#favorites-section">Favorites</a>
+      </nav>
+      <div class="user-auth">
         <div id="login-form">
             <input type="text" id="login-username" placeholder="Username">
             <input type="password" id="login-password" placeholder="Password">
-            <button id="login-btn">Login</button>
-            <button id="show-register-btn">Register</button>
+            <button id="login-btn" class="btn">Login</button>
+            <button id="show-register-btn" class="btn">Register</button>
         </div>
         <div id="register-form" class="hidden">
             <input type="text" id="register-username" placeholder="Username">
             <input type="password" id="register-password" placeholder="Password">
             <input type="email" id="register-email" placeholder="Email">
-            <button id="register-btn">Register</button>
+            <button id="register-btn" class="btn">Register</button>
         </div>
         <div id="user-profile" class="hidden">
             <span id="welcome-message"></span>
-            <button id="logout-btn">Logout</button>
+            <button id="logout-btn" class="btn">Logout</button>
         </div>
-    </div>
-  </header>
-
-  <main class="game-content">
-    <div class="parent">
-      <div id="one" class="all">press the button</div>
-    </div>
-    <div class="theme-selector">
-      <label for="theme-dropdown">Select a Theme:</label>
-      <select id="theme-dropdown">
-        <option value="">Classic</option>
-        <option value="dessert">Desserts</option>
-        <option value="seafood">Seafood</option>
-      </select>
-    </div>
-    <div class="div_btn">
-      <button id="btn">click here to find your next favorite food</button>
-    </div>
-  </main>
-
-  <!-- New sections for About and List content -->
-  <section id="about-section" class="content-section">
-    <h2>About Crimes Against Foodies</h2>
-    <p>Welcome to Crimes Against Foodies! This is a fun project that helps you discover... well, interesting food combinations. Some might be delicious, some might be culinary crimes. You decide!</p>
-    <p>The idea is to spark creativity or just give you a laugh. Enjoy the randomness!</p>
-    <p>This section is where you can elaborate on the project, its purpose, or any other information you'd typically put on an "About" page.</p>
-  </section>
-  <section id="list-section" class="content-section">
-    <h2>Possible Ingredients & Preparations (The "List")</h2>
-    <p>Our generator pulls from a list of various food items and preparation methods. Here's a conceptual idea of what might be included (the actual list is in our secret JSON vault!):</p>
-    
-    <div class="list-controls">
-      <input type="text" id="list-search-input" placeholder="Search lists...">
-
-      <div id="suggestion-form" style="margin-top: 10px; margin-bottom: 10px;">
-        <input type="text" id="new-suggestion-text" placeholder="Enter your suggestion" style="margin-right: 5px;">
-        <label for="type-food">Food</label>
-        <input type="radio" name="suggestion-type" value="Food" id="type-food" style="margin-right: 5px;">
-        <label for="type-preperation">Preperation</label>
-        <input type="radio" name="suggestion-type" value="Preperation" id="type-preperation" style="margin-right: 5px;">
-        <label for="type-both">Both</label>
-        <input type="radio" name="suggestion-type" value="Both" id="type-both" checked style="margin-right: 10px;">
-        <button id="suggest-item-btn" class="list-action-btn">Suggest New Item</button>
       </div>
-    </div>
+    </header>
 
-    <div class="list-columns-container">
-      <div class="list-column">
-        <h3>Preparations:</h3>
-        <ul id="preparations-list">
-          <!-- Preparation methods will be populated here by JavaScript -->
+    <aside class="sidebar">
+      <h3>Ingredients</h3>
+      <input type="text" id="ingredient-search" placeholder="Search ingredients...">
+      <div id="ingredient-categories">
+        <!-- Categories will be populated by JavaScript -->
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="card">
+        <h2>Random Food Generator</h2>
+        <div class="parent">
+          <div id="one" class="all">press the button</div>
+        </div>
+        <div class="theme-selector">
+          <label for="theme-dropdown">Select a Theme:</label>
+          <select id="theme-dropdown">
+            <option value="">Classic</option>
+            <option value="dessert">Desserts</option>
+            <option value="seafood">Seafood</option>
+          </select>
+        </div>
+        <div class="div_btn">
+          <button id="btn">click here to find your next favorite food</button>
+        </div>
+        <section id="image-generation-section">
+            <button id="generate-image-btn" class="hidden">Generate Image</button>
+            <button id="save-favorite-btn" class="hidden">Save to Favorites</button>
+            <button id="upvote-btn" class="hidden">Upvote</button>
+            <div id="image-container" class="hidden">
+                <img id="generated-image" src="" alt="AI-generated image of the food crime">
+            </div>
+            <div id="social-sharing-buttons" class="hidden">
+              <a href="https://twitter.com/intent/tweet?text=Check%20out%20this%20culinary%20crime%20I%20generated%3A%20&url=https://bossarant.github.io/CrimesAgainstFoodies/" target="_blank" id="twitter-share-btn">Share on Twitter</a>
+              <a href="https://www.reddit.com/submit?url=https://bossarant.github.io/CrimesAgainstFoodies/&title=A%20New%20Culinary%20Crime%3A%20" target="_blank" id="reddit-share-btn">Share on Reddit</a>
+              <a href="https://www.facebook.com/sharer/sharer.php?u=https://bossarant.github.io/CrimesAgainstFoodies/" target="_blank" id="facebook-share-btn">Share on Facebook</a>
+            </div>
+        </section>
+      </div>
+
+      <div class="card">
+        <h2>Suggestion Box</h2>
+        <div id="suggestion-form">
+          <input type="text" id="new-suggestion-text" placeholder="Enter your suggestion">
+          <label for="type-food">Food</label>
+          <input type="radio" name="suggestion-type" value="Food" id="type-food">
+          <label for="type-preperation">Preperation</label>
+          <input type="radio" name="suggestion-type" value="Preperation" id="type-preperation">
+          <label for="type-both">Both</label>
+          <input type="radio" name="suggestion-type" value="Both" id="type-both" checked>
+          <button id="suggest-item-btn" class="list-action-btn">Suggest New Item</button>
+        </div>
+      </div>
+
+      <div class="card" id="hall-of-fame-section">
+          <h2>Hall of Fame</h2>
+          <ul id="hall-of-fame-list">
+              <!-- Top combinations will be populated here -->
+          </ul>
+      </div>
+
+      <div class="card" id="favorites-section">
+        <h2>Favorites</h2>
+        <ul id="favorites-list">
+            <!-- User's favorite combinations will be populated here -->
         </ul>
-      </div>
-      <div class="list-column">
-        <h3>Food Items:</h3>
-        <ul id="foods-list">
-          <!-- Food items will be populated here by JavaScript -->
-        </ul>
-      </div>
     </div>
-  </section>
-
-  <section id="image-generation-section">
-      <button id="generate-image-btn" class="hidden">Generate Image</button>
-      <button id="save-favorite-btn" class="hidden">Save to Favorites</button>
-      <button id="upvote-btn" class="hidden">Upvote</button>
-      <div id="image-container" class="hidden">
-          <img id="generated-image" src="" alt="AI-generated image of the food crime">
-      </div>
-      <div id="social-sharing-buttons" class="hidden">
-        <a href="https://twitter.com/intent/tweet?text=Check%20out%20this%20culinary%20crime%20I%20generated%3A%20&url=https://bossarant.github.io/CrimesAgainstFoodies/" target="_blank" id="twitter-share-btn">Share on Twitter</a>
-        <a href="https://www.reddit.com/submit?url=https://bossarant.github.io/CrimesAgainstFoodies/&title=A%20New%20Culinary%20Crime%3A%20" target="_blank" id="reddit-share-btn">Share on Reddit</a>
-        <a href="https://www.facebook.com/sharer/sharer.php?u=https://bossarant.github.io/CrimesAgainstFoodies/" target="_blank" id="facebook-share-btn">Share on Facebook</a>
-      </div>
-  </section>
-
-  <section id="hall-of-fame-section">
-      <h2>Hall of Fame</h2>
-      <ul id="hall-of-fame-list">
-          <!-- Top combinations will be populated here -->
-      </ul>
-  </section>
+    </main>
+  </div>
 
   <footer id="footer">
     <p>&copy; 2023 Crimes Against Foodies. All rights reserved (mostly for laughs).</p>
