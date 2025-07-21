@@ -1,0 +1,3 @@
+# Ignore the .env file in the backend directory
+backend/.env
+backend/service-account.json

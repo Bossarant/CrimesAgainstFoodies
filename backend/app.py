@@ -180,7 +180,8 @@ def delete_item(item_type, item_id):
     db.session.commit()
     return jsonify({'message': f'{item_type.capitalize()} item deleted successfully'})
 
-import openai
+import vertexai
+from vertexai.preview.vision_models import ImageGenerationModel
 
 @app.route('/api/admin/stats', methods=['GET'])
 def get_stats():
@@ -316,15 +317,29 @@ def generate_image():
         return jsonify({'error': 'Prompt is required'}), 400
 
     try:
-        # NOTE: Replace with your actual OpenAI API key
-        openai.api_key = os.environ.get("OPENAI_API_KEY", "YOUR_API_KEY")
-        response = openai.Image.create(
-            prompt=f"A photorealistic image of {prompt}",
-            n=1,
-            size="512x512"
+        # NOTE: You'll need to set up authentication for Vertex AI
+        # This might involve setting GOOGLE_APPLICATION_CREDENTIALS environment variable
+        # https://cloud.google.com/docs/authentication/provide-credentials-adc
+        vertexai.init(project=os.environ.get("GCP_PROJECT_ID"), location=os.environ.get("GCP_PROJECT_LOCATION"))
+
+        model = ImageGenerationModel.from_pretrained("imagegeneration@006") # Using the latest stable model
+
+        response = model.generate_images(
+            prompt=prompt,
+            number_of_images=1, # Generate one image
         )
-        image_url = response['data'][0]['url']
-        return jsonify({'image_url': image_url})
+
+        # The response contains image objects, not a URL.
+        # You need to save the image data to a file or serve it.
+        # For example, to save the first image:
+        image_bytes = response.images[0]._image_bytes
+        output_file = "generated_image.png"
+        with open(output_file, "wb") as f:
+            f.write(image_bytes)
+        # In a web app, you would typically upload this to a cloud storage bucket
+        # and get a public URL to return in your JSON response.
+        # For this example, we'll just return the local filename.
+        return jsonify({'image_path': output_file})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
