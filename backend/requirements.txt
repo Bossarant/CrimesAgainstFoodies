@@ -2,3 +2,7 @@ Flask
 Flask-SQLAlchemy
 Flask-Cors
 openai
+Flask-Migrate
+Flask-Bcrypt
+Flask-JWT-Extended
+google-cloud-aiplatform

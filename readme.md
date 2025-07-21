@@ -16,7 +16,7 @@ A fun project that generates interesting food combinations, and then uses AI to 
 *   **Frontend:** HTML, CSS, JavaScript
 *   **Backend:** Python, Flask, SQLAlchemy
 *   **Database:** SQLite
-*   **Image Generation:** OpenAI DALL-E
+*   **Image Generation:** Google Gemini
 
 ## How to Run
 
@@ -38,10 +38,13 @@ A fun project that generates interesting food combinations, and then uses AI to 
     python backend/populate_db.py
     python backend/populate_categories.py
     ```
-5.  **Set the OpenAI API Key:**
-    Create a `.env` file in the `backend` directory and add your OpenAI API key:
+5.  **Set up Google Cloud Authentication:**
+    - Create a service account and download the key as a JSON file.
+    - Set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to the path of the JSON file.
+    - Create a `.env` file in the `backend` directory and add the following:
     ```
-    OPENAI_API_KEY=your-api-key
+    GCP_PROJECT_ID=your-gcp-project-id
+    GCP_PROJECT_LOCATION=your-gcp-project-location
     ```
 6.  **Run the Flask application:**
     ```bash
