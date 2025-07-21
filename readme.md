@@ -50,7 +50,7 @@ A fun project that generates interesting food combinations, and then uses AI to 
     ```bash
     python -m flask run
     ```
-7.  **Open `index.html` in your browser.**
+7.  **Open your browser and navigate to `http://127.0.0.1:5000`** (or the address shown in the terminal when you started the Flask application).
 
 ## Admin Panel
 

@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime
@@ -7,14 +7,14 @@ from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
 
-app = Flask(__name__)
+basedir = os.path.abspath(os.path.dirname(__file__))
+app = Flask(__name__, static_folder=os.path.join(basedir, '..'), static_url_path='')
 app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this in your production environment!
 jwt = JWTManager(app)
 CORS(app)
 bcrypt = Bcrypt(app)
 
 # Database Configuration
-basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -329,19 +329,21 @@ def generate_image():
             number_of_images=1, # Generate one image
         )
 
-        # The response contains image objects, not a URL.
-        # You need to save the image data to a file or serve it.
-        # For example, to save the first image:
         image_bytes = response.images[0]._image_bytes
-        output_file = "generated_image.png"
-        with open(output_file, "wb") as f:
+        image_filename = "generated_image.png"
+        # Save the image to the parent directory (the frontend root)
+        output_path = os.path.join(basedir, '..', image_filename)
+        with open(output_path, "wb") as f:
             f.write(image_bytes)
-        # In a web app, you would typically upload this to a cloud storage bucket
-        # and get a public URL to return in your JSON response.
-        # For this example, we'll just return the local filename.
-        return jsonify({'image_path': output_file})
+        # Return a URL that the frontend can use. The leading slash makes it a root-relative URL.
+        return jsonify({'image_url': f'/{image_filename}'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/')
+def serve_index():
+    # Serve index.html from the static folder (which is the project root)
+    return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
